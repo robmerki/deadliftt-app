@@ -1,7 +1,8 @@
 import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import nodeStore, { NodeStore, FlowData } from '@/stores/nodeStore'
+import nodeStore, { NodeStore } from '@/stores/nodeStore'
 import { shallow } from 'zustand/shallow'
+import { PlusCircleIcon } from '@heroicons/react/20/solid'
 
 import { classNames } from '@/util/classNames'
 import {
@@ -10,6 +11,7 @@ import {
   UsersIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
+import CreateFlowModal from './CreateFlowModal'
 
 const navigation = [
   { name: 'Home', href: '#', icon: HomeIcon, current: true },
@@ -22,8 +24,9 @@ const selector = (state: NodeStore) => ({
   changeActiveFlow: state.changeActiveFlow,
 })
 
-export default function Example() {
+export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [createModalOpen, setCreateModalOpen] = useState(false)
 
   const { currentFlowId, flows, changeActiveFlow } = nodeStore(
     selector,
@@ -31,8 +34,11 @@ export default function Example() {
   )
 
   const handleChangeActiveFlow = (newId: string) => {
-    console.log(newId)
     changeActiveFlow(newId)
+  }
+
+  const toggleCreateModal = () => {
+    setCreateModalOpen(!createModalOpen)
   }
 
   return (
@@ -92,11 +98,7 @@ export default function Example() {
                 {/* Sidebar component, swap this element with another sidebar if you like */}
                 <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2">
                   <div className="flex h-16 shrink-0 items-center">
-                    <img
-                      className="h-8 w-auto"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                      alt="Your Company"
-                    />
+                    Deadliftt
                   </div>
                   <nav className="flex flex-1 flex-col">
                     <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -108,16 +110,16 @@ export default function Example() {
                                 href={item.href}
                                 className={classNames(
                                   item.current
-                                    ? 'bg-gray-50 text-indigo-600'
-                                    : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
+                                    ? 'bg-gray-50 text-blue-600'
+                                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50',
                                   'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
                                 )}
                               >
                                 <item.icon
                                   className={classNames(
                                     item.current
-                                      ? 'text-indigo-600'
-                                      : 'text-gray-400 group-hover:text-indigo-600',
+                                      ? 'text-blue-600'
+                                      : 'text-gray-400 group-hover:text-blue-600',
                                     'h-6 w-6 shrink-0'
                                   )}
                                   aria-hidden="true"
@@ -143,16 +145,16 @@ export default function Example() {
                                 // href={flow.href}
                                 className={classNames(
                                   flow.id === currentFlowId
-                                    ? 'bg-gray-50 text-indigo-600'
-                                    : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
+                                    ? 'bg-gray-50 text-blue-600'
+                                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50',
                                   'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
                                 )}
                               >
                                 <span
                                   className={classNames(
                                     flow.id === currentFlowId
-                                      ? 'text-indigo-600 border-indigo-600'
-                                      : 'text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600',
+                                      ? 'text-blue-600 border-blue-600'
+                                      : 'text-gray-400 border-gray-200 group-hover:border-blue-600 group-hover:text-blue-600',
                                     'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white'
                                   )}
                                 >
@@ -163,6 +165,7 @@ export default function Example() {
                             </li>
                           ))}
                         </ul>
+                        <CreateNewButton onClick={toggleCreateModal} />
                       </li>
                     </ul>
                   </nav>
@@ -174,16 +177,10 @@ export default function Example() {
       </Transition.Root>
 
       {/* Static sidebar for desktop */}
-      <div className="hidden lg:relative lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+      <div className="hidden lg:static lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col min-h-full">
         {/* Sidebar component, swap this element with another sidebar if you like */}
         <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
-          <div className="flex h-16 shrink-0 items-center">
-            <img
-              className="h-8 w-auto"
-              src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-              alt="Your Company"
-            />
-          </div>
+          <div className="flex h-16 shrink-0 items-center">Deadliftt</div>
           <nav className="flex flex-1 flex-col">
             <ul role="list" className="flex flex-1 flex-col gap-y-7">
               <li>
@@ -194,16 +191,16 @@ export default function Example() {
                         href={item.href}
                         className={classNames(
                           item.current
-                            ? 'bg-gray-50 text-indigo-600'
-                            : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
+                            ? 'bg-gray-50 text-blue-600'
+                            : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50',
                           'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
                         )}
                       >
                         <item.icon
                           className={classNames(
                             item.current
-                              ? 'text-indigo-600'
-                              : 'text-gray-400 group-hover:text-indigo-600',
+                              ? 'text-blue-600'
+                              : 'text-gray-400 group-hover:text-blue-600',
                             'h-6 w-6 shrink-0'
                           )}
                           aria-hidden="true"
@@ -228,16 +225,16 @@ export default function Example() {
                       <a
                         className={classNames(
                           flow.id === currentFlowId
-                            ? 'bg-gray-50 text-indigo-600'
-                            : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50',
+                            ? 'bg-gray-50 text-blue-600'
+                            : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50',
                           'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
                         )}
                       >
                         <span
                           className={classNames(
                             flow.id === currentFlowId
-                              ? 'text-indigo-600 border-indigo-600'
-                              : 'text-gray-400 border-gray-200 group-hover:border-indigo-600 group-hover:text-indigo-600',
+                              ? 'text-blue-600 border-blue-600'
+                              : 'text-gray-400 border-gray-200 group-hover:border-blue-600 group-hover:text-blue-600',
                             'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white'
                           )}
                         >
@@ -248,8 +245,9 @@ export default function Example() {
                     </li>
                   ))}
                 </ul>
+                <CreateNewButton onClick={toggleCreateModal} />
               </li>
-              <li className="-mx-6 mt-auto">
+              {/* <li className="-mx-6 mt-auto">
                 <a
                   href="#"
                   className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-50"
@@ -262,7 +260,7 @@ export default function Example() {
                   <span className="sr-only">Your profile</span>
                   <span aria-hidden="true">Tom Cook</span>
                 </a>
-              </li>
+              </li> */}
             </ul>
           </nav>
         </div>
@@ -278,17 +276,36 @@ export default function Example() {
           <span className="sr-only">Open sidebar</span>
           <Bars3Icon className="h-6 w-6" aria-hidden="true" />
         </button>
-        <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">
+        {/* <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">
           Dashboard
-        </div>
-        <a href="#">
+        </div> */}
+        {/* <a href="#">
           <span className="sr-only">Your profile</span>
           <img
             className="h-8 w-8 rounded-full bg-gray-50"
             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
             alt=""
           />
-        </a>
+        </a> */}
+      </div>
+      <CreateFlowModal open={createModalOpen} setOpen={setCreateModalOpen} />
+    </>
+  )
+}
+
+const CreateNewButton = ({ onClick }) => {
+  return (
+    <>
+      <div className="h-px bg-gray-200 my-4" />
+      <div className="-mx-2">
+        <button
+          onClick={onClick}
+          type="button"
+          className="w-full inline-flex items-center gap-x-1.5 rounded-md bg-blue-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        >
+          <PlusCircleIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
+          Create New
+        </button>
       </div>
     </>
   )

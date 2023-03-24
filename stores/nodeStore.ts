@@ -38,6 +38,7 @@ export type NodeStore = {
   resetCurrentFlow: () => void
   createNewFlow: (title: string) => void
   changeActiveFlow: (id: string) => void
+  updateFlowTitle: (id: string) => void
 }
 
 function getCurrentFlowIndex(get: () => NodeStore) {
@@ -119,6 +120,15 @@ const nodeStore = create(
             }
             state.flows.push(newFlow)
             state.currentFlowId = newFlow.id
+          })
+        )
+      },
+      updateFlowTitle: (title: string) => {
+        console.log(title)
+        set(
+          produce((state) => {
+            const currentFlowIndex = getCurrentFlowIndex(get)
+            state.flows[currentFlowIndex].title = title
           })
         )
       },

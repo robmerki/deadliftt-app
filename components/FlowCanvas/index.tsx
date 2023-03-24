@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import nodeStore, { NodeStore, FlowData } from '@/stores/nodeStore'
 import { shallow } from 'zustand/shallow'
 import findIndex from 'lodash/findIndex'
+import TextUpdaterNode from './CustomNodes/TextUpdaterNode'
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -14,34 +15,37 @@ import 'reactflow/dist/style.css'
 const selector = (state: NodeStore) => ({
   currentFlowId: state.currentFlowId,
   flows: state.flows,
-  createNewFlow: state.createNewFlow,
+  updateFlowTitle: state.updateFlowTitle,
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
   resetCurrentFlow: state.resetCurrentFlow,
 })
 
+const nodeTypes = { textUpdater: TextUpdaterNode }
+
 const Canvas = () => {
   const {
     currentFlowId,
     flows,
-    createNewFlow,
+    updateFlowTitle,
     onNodesChange,
     onEdgesChange,
     onConnect,
-    resetCurrentFlow,
+    // resetCurrentFlow,
   } = nodeStore(selector, shallow)
-
   const currentFlowIndex = findIndex(
     flows,
     (flow: FlowData) => flow.id === currentFlowId
   )
-
   const { nodes, edges, title } = flows[currentFlowIndex]
 
-  function handleCreateNewFlow() {
-    const newTitle = 'new title!'
-    createNewFlow(newTitle)
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [newTitleText, setNewTitleText] = useState(title)
+
+  function handleDoneWithEditingTitle() {
+    setIsEditingTitle(false)
+    updateFlowTitle(newTitleText)
   }
 
   return (
@@ -51,13 +55,30 @@ const Canvas = () => {
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       onConnect={onConnect}
+      nodeTypes={nodeTypes}
     >
-      <Panel position="top-left">
-        <div onClick={handleCreateNewFlow}>New Graph</div>
-      </Panel>
-      <Panel position="top-center">{title}</Panel>
-      <Panel position="top-right" onClick={resetCurrentFlow}>
-        Reset Graph
+      <Panel position="top-center">
+        <div>
+          {!isEditingTitle && (
+            <h2
+              className="font-lg font-bold text-blue-900 text-center"
+              onClick={() => setIsEditingTitle(true)}
+            >
+              {title}
+            </h2>
+          )}
+          {isEditingTitle && (
+            <input
+              className="font-lg font-bold text-blue-900 text-center"
+              value={newTitleText}
+              onChange={(evt) => setNewTitleText(evt.target.value)}
+              onBlur={handleDoneWithEditingTitle}
+              onKeyDown={(evt) => {
+                if (evt.key === 'Enter') handleDoneWithEditingTitle()
+              }}
+            />
+          )}
+        </div>
       </Panel>
       <Controls />
       <MiniMap />
