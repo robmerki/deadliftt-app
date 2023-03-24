@@ -11,9 +11,8 @@ import ReactFlow, {
 import 'reactflow/dist/style.css'
 
 const selector = (state: NodeStore) => ({
-  // currentFlowId: state.currentFlowId,
   getCurrentFlow: state.getCurrentFlow,
-  // flows: state.flows,
+  createNewFlow: state.createNewFlow,
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   onConnect: state.onConnect,
@@ -22,16 +21,20 @@ const selector = (state: NodeStore) => ({
 
 const Canvas = () => {
   const {
-    // currentFlowId,
     getCurrentFlow,
-    // flows,
+    createNewFlow,
     onNodesChange,
     onEdgesChange,
     onConnect,
     resetCurrentFlow,
   } = nodeStore(selector, shallow)
 
-  const { nodes, edges } = getCurrentFlow()
+  const { nodes, edges, title } = getCurrentFlow()
+
+  function handleCreateNewFlow() {
+    const newTitle = 'new title!'
+    createNewFlow(newTitle)
+  }
 
   return (
     <ReactFlow
@@ -41,8 +44,12 @@ const Canvas = () => {
       onEdgesChange={onEdgesChange}
       onConnect={onConnect}
     >
-      <Panel position="top-left" onClick={resetCurrentFlow}>
-        Reset
+      <Panel position="top-left">
+        <div onClick={handleCreateNewFlow}>New Graph</div>
+      </Panel>
+      <Panel position="top-center">{title}</Panel>
+      <Panel position="top-right" onClick={resetCurrentFlow}>
+        Reset Graph
       </Panel>
       <Controls />
       <MiniMap />

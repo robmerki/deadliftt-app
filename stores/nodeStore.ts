@@ -2,6 +2,8 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import produce from 'immer'
 import findIndex from 'lodash/findIndex'
+import { v4 as uuidv4 } from 'uuid'
+
 import {
   Connection,
   Edge,
@@ -26,6 +28,7 @@ export type FlowData = {
 }
 
 export type NodeStore = {
+  _hasHydrated: boolean
   flows: FlowData[]
   currentFlowId: string
   getCurrentFlow: () => FlowData
@@ -33,6 +36,7 @@ export type NodeStore = {
   onEdgesChange: OnEdgesChange
   onConnect: OnConnect
   resetCurrentFlow: () => void
+  createNewFlow: (title: string) => void
 }
 
 function getCurrentFlowIndex(get: () => NodeStore) {
@@ -45,6 +49,7 @@ function getCurrentFlowIndex(get: () => NodeStore) {
 const nodeStore = create(
   persist<NodeStore>(
     (set, get) => ({
+      _hasHydrated: false, // check for local storage hydration
       flows: [defaultFlow],
       currentFlowId: defaultFlow.id,
       getCurrentFlow: (): FlowData => {
@@ -75,12 +80,14 @@ const nodeStore = create(
       },
       onConnect: (connection: Connection) => {
         const currentFlowIndex = getCurrentFlowIndex(get)
-        produce((state) => {
-          state.flows[currentFlowIndex].edges = addEdge(
-            connection,
-            get().flows[currentFlowIndex].edges
-          )
-        })
+        set(
+          produce((state) => {
+            state.flows[currentFlowIndex].edges = addEdge(
+              connection,
+              get().flows[currentFlowIndex].edges
+            )
+          })
+        )
       },
       resetCurrentFlow: () => {
         const id = get().currentFlowId
@@ -88,10 +95,29 @@ const nodeStore = create(
           state.flows[id] = defaultFlow
         })
       },
+      createNewFlow: (title: string) => {
+        set(
+          produce((state) => {
+            const newFlow = {
+              ...defaultFlow,
+              id: uuidv4(),
+              title: title,
+            }
+            console.log(newFlow)
+            state.flows.push(newFlow)
+            state.currentFlowId = newFlow.id
+          })
+        )
+      },
     }),
     {
       name: 'nodestore',
       storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+      onRehydrateStorage: (state) => {
+        return () => {
+          nodeStore.setState({ _hasHydrated: true })
+        }
+      },
     }
   )
 )
