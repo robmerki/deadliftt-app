@@ -11,6 +11,9 @@
   "eslint.debug": true,
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
   // "eslint.trace.server": "verbose"
 }
