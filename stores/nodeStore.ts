@@ -37,6 +37,7 @@ export type NodeStore = {
   onConnect: OnConnect
   resetCurrentFlow: () => void
   createNewFlow: (title: string) => void
+  changeActiveFlow: (id: string) => void
 }
 
 function getCurrentFlowIndex(get: () => NodeStore) {
@@ -51,6 +52,13 @@ const nodeStore = create(
     (set, get) => ({
       _hasHydrated: false, // check for local storage hydration
       flows: [defaultFlow],
+      changeActiveFlow: (flowId: string) => {
+        set(
+          produce((state) => {
+            state.currentFlowId = flowId
+          })
+        )
+      },
       currentFlowId: defaultFlow.id,
       getCurrentFlow: (): FlowData => {
         const currentFlowIndex = getCurrentFlowIndex(get)
@@ -73,7 +81,7 @@ const nodeStore = create(
           produce((state) => {
             state.flows[currentFlowIndex].edges = applyEdgeChanges(
               changes,
-              get().flows[currentFlowIndex].edges
+              state.flows[currentFlowIndex].edges
             )
           })
         )
@@ -84,16 +92,22 @@ const nodeStore = create(
           produce((state) => {
             state.flows[currentFlowIndex].edges = addEdge(
               connection,
-              get().flows[currentFlowIndex].edges
+              state.flows[currentFlowIndex].edges
             )
           })
         )
       },
       resetCurrentFlow: () => {
-        const id = get().currentFlowId
-        produce((state) => {
-          state.flows[id] = defaultFlow
-        })
+        set(
+          produce((state) => {
+            const currentFlowIndex = getCurrentFlowIndex(get)
+            const currentFlowId = state.currentFlowId
+            state.flows[currentFlowIndex] = {
+              ...defaultFlow,
+              id: currentFlowId,
+            }
+          })
+        )
       },
       createNewFlow: (title: string) => {
         set(
@@ -103,7 +117,6 @@ const nodeStore = create(
               id: uuidv4(),
               title: title,
             }
-            console.log(newFlow)
             state.flows.push(newFlow)
             state.currentFlowId = newFlow.id
           })
@@ -113,7 +126,7 @@ const nodeStore = create(
     {
       name: 'nodestore',
       storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
-      onRehydrateStorage: (state) => {
+      onRehydrateStorage: () => {
         return () => {
           nodeStore.setState({ _hasHydrated: true })
         }

@@ -1,6 +1,7 @@
 import { Node } from 'reactflow'
 import { Edge } from 'reactflow'
 import { FlowData } from './nodeStore'
+import { v4 as uuidv4 } from 'uuid'
 
 export const defaultNodes = [
   {
@@ -14,7 +15,7 @@ export const defaultNodes = [
 export const defaultEdges = [] as Edge[]
 
 export const defaultFlow = {
-  id: 'default',
+  id: uuidv4(),
   title: 'Untitled',
   nodes: defaultNodes,
   edges: defaultEdges,

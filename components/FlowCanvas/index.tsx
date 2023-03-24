@@ -1,6 +1,7 @@
 import React from 'react'
-import nodeStore, { NodeStore } from '@/stores/nodeStore'
+import nodeStore, { NodeStore, FlowData } from '@/stores/nodeStore'
 import { shallow } from 'zustand/shallow'
+import findIndex from 'lodash/findIndex'
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -11,7 +12,8 @@ import ReactFlow, {
 import 'reactflow/dist/style.css'
 
 const selector = (state: NodeStore) => ({
-  getCurrentFlow: state.getCurrentFlow,
+  currentFlowId: state.currentFlowId,
+  flows: state.flows,
   createNewFlow: state.createNewFlow,
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
@@ -21,7 +23,8 @@ const selector = (state: NodeStore) => ({
 
 const Canvas = () => {
   const {
-    getCurrentFlow,
+    currentFlowId,
+    flows,
     createNewFlow,
     onNodesChange,
     onEdgesChange,
@@ -29,7 +32,12 @@ const Canvas = () => {
     resetCurrentFlow,
   } = nodeStore(selector, shallow)
 
-  const { nodes, edges, title } = getCurrentFlow()
+  const currentFlowIndex = findIndex(
+    flows,
+    (flow: FlowData) => flow.id === currentFlowId
+  )
+
+  const { nodes, edges, title } = flows[currentFlowIndex]
 
   function handleCreateNewFlow() {
     const newTitle = 'new title!'
