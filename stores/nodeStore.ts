@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 import produce from 'immer'
 import findIndex from 'lodash/findIndex'
 import { v4 as uuidv4 } from 'uuid'
+import { dataToNodes } from '@/util/dataToNodes'
 
 import {
   Connection,
@@ -36,7 +37,7 @@ export type NodeStore = {
   onEdgesChange: OnEdgesChange
   onConnect: OnConnect
   resetCurrentFlow: () => void
-  createNewFlow: (title: string) => void
+  createNewFlow: (category: string, stringJsonData: string) => void
   changeActiveFlow: (id: string) => void
   updateFlowTitle: (id: string) => void
 }
@@ -110,13 +111,17 @@ const nodeStore = create(
           })
         )
       },
-      createNewFlow: (title: string) => {
+      createNewFlow: (category: string, stringJsonData: string) => {
         set(
           produce((state) => {
-            const newFlow = {
-              ...defaultFlow,
+            const parsedData = JSON.parse(stringJsonData)
+            const withRootElement = { [category]: parsedData }
+            const newFlowData = dataToNodes(withRootElement)
+            const newFlow: FlowData = {
               id: uuidv4(),
-              title: title,
+              title: category,
+              nodes: newFlowData.nodes,
+              edges: newFlowData.edges,
             }
             state.flows.push(newFlow)
             state.currentFlowId = newFlow.id
@@ -124,7 +129,6 @@ const nodeStore = create(
         )
       },
       updateFlowTitle: (title: string) => {
-        console.log(title)
         set(
           produce((state) => {
             const currentFlowIndex = getCurrentFlowIndex(get)

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import nodeStore, { NodeStore, FlowData } from '@/stores/nodeStore'
 import { shallow } from 'zustand/shallow'
 import findIndex from 'lodash/findIndex'
@@ -32,7 +32,6 @@ const Canvas = () => {
     onNodesChange,
     onEdgesChange,
     onConnect,
-    // resetCurrentFlow,
   } = nodeStore(selector, shallow)
   const currentFlowIndex = findIndex(
     flows,
@@ -42,6 +41,10 @@ const Canvas = () => {
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [newTitleText, setNewTitleText] = useState(title)
+
+  useEffect(() => {
+    setNewTitleText(title)
+  }, [currentFlowId, title])
 
   function handleDoneWithEditingTitle() {
     setIsEditingTitle(false)

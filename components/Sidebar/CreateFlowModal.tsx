@@ -1,8 +1,8 @@
 import React, { Fragment, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { CheckIcon } from '@heroicons/react/24/outline'
 import { classNames } from '@/util/classNames'
 import axios from 'axios'
+import nodeStore from '@/stores/nodeStore'
 
 type Props = {
   open: boolean
@@ -14,6 +14,8 @@ const CreateFlowModal = ({ open, setOpen }: Props) => {
   const [keywords, setKeywords] = useState('')
   const [isLoading, setLoading] = useState(false)
   const [results, setResults] = useState(null)
+
+  const createNewFlow = nodeStore((state) => state.createNewFlow)
 
   const handleCreateFlow = async () => {
     setLoading(true)
@@ -32,9 +34,15 @@ const CreateFlowModal = ({ open, setOpen }: Props) => {
     if (isLoading) return
     if (!results) return
     if (!isLoading && results) {
-      console.log(results)
+      createNewFlow(category, results)
+      setOpen(false)
     }
-  }, [results, isLoading])
+    return () => {
+      setCategory('')
+      setKeywords('')
+      setResults(null)
+    }
+  }, [results, isLoading, category, createNewFlow, setOpen])
 
   return (
     <>

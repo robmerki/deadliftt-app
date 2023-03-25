@@ -1,5 +1,4 @@
-import { Node } from 'reactflow'
-import { Edge } from 'reactflow'
+import { Node, Edge } from 'reactflow'
 import { FlowData } from './nodeStore'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -8,7 +7,7 @@ export const defaultNodes = [
     id: '1',
     type: 'input',
     data: { label: 'Start Here' },
-    position: { x: 250, y: 25 },
+    position: { x: 0, y: 0 },
   },
 ] as Node[]
 

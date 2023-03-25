@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import nodeStore, { NodeStore } from '@/stores/nodeStore'
+import nodeStore, { NodeStore, FlowData } from '@/stores/nodeStore'
 import { shallow } from 'zustand/shallow'
 import { PlusCircleIcon } from '@heroicons/react/20/solid'
 
@@ -96,79 +96,13 @@ export default function Sidebar() {
                   </div>
                 </Transition.Child>
                 {/* Sidebar component, swap this element with another sidebar if you like */}
-                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2">
-                  <div className="flex h-16 shrink-0 items-center">
-                    Deadliftt
-                  </div>
-                  <nav className="flex flex-1 flex-col">
-                    <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                      <li>
-                        <ul role="list" className="-mx-2 space-y-1">
-                          {navigation.map((item) => (
-                            <li key={item.name}>
-                              <a
-                                href={item.href}
-                                className={classNames(
-                                  item.current
-                                    ? 'bg-gray-50 text-blue-600'
-                                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50',
-                                  'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                                )}
-                              >
-                                <item.icon
-                                  className={classNames(
-                                    item.current
-                                      ? 'text-blue-600'
-                                      : 'text-gray-400 group-hover:text-blue-600',
-                                    'h-6 w-6 shrink-0'
-                                  )}
-                                  aria-hidden="true"
-                                />
-                                {item.name}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </li>
-                      <li>
-                        <div className="text-xs font-semibold leading-6 text-gray-400">
-                          Your flows
-                        </div>
-                        <ul role="list" className="-mx-2 mt-2 space-y-1">
-                          {flows.map((flow) => (
-                            <li
-                              key={flow.id}
-                              onClick={() => handleChangeActiveFlow(flow.id)}
-                              className="cursor-pointer"
-                            >
-                              <a
-                                // href={flow.href}
-                                className={classNames(
-                                  flow.id === currentFlowId
-                                    ? 'bg-gray-50 text-blue-600'
-                                    : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50',
-                                  'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                                )}
-                              >
-                                <span
-                                  className={classNames(
-                                    flow.id === currentFlowId
-                                      ? 'text-blue-600 border-blue-600'
-                                      : 'text-gray-400 border-gray-200 group-hover:border-blue-600 group-hover:text-blue-600',
-                                    'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white'
-                                  )}
-                                >
-                                  {flow.title.slice(0, 2)}
-                                </span>
-                                <span className="truncate">{flow.title}</span>
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                        <CreateNewButton onClick={toggleCreateModal} />
-                      </li>
-                    </ul>
-                  </nav>
+                <div className="h-screen">
+                  <SidebarContent
+                    flows={flows}
+                    currentFlowId={currentFlowId}
+                    handleChangeActiveFlow={handleChangeActiveFlow}
+                    toggleCreateModal={toggleCreateModal}
+                  />
                 </div>
               </Dialog.Panel>
             </Transition.Child>
@@ -177,93 +111,14 @@ export default function Sidebar() {
       </Transition.Root>
 
       {/* Static sidebar for desktop */}
-      <div className="hidden lg:static lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col min-h-full">
+      <div className="h-screen hidden lg:static lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
         {/* Sidebar component, swap this element with another sidebar if you like */}
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
-          <div className="flex h-16 shrink-0 items-center">Deadliftt</div>
-          <nav className="flex flex-1 flex-col">
-            <ul role="list" className="flex flex-1 flex-col gap-y-7">
-              <li>
-                <ul role="list" className="-mx-2 space-y-1">
-                  {navigation.map((item) => (
-                    <li key={item.name}>
-                      <a
-                        href={item.href}
-                        className={classNames(
-                          item.current
-                            ? 'bg-gray-50 text-blue-600'
-                            : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50',
-                          'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                        )}
-                      >
-                        <item.icon
-                          className={classNames(
-                            item.current
-                              ? 'text-blue-600'
-                              : 'text-gray-400 group-hover:text-blue-600',
-                            'h-6 w-6 shrink-0'
-                          )}
-                          aria-hidden="true"
-                        />
-                        {item.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </li>
-              <li>
-                <div className="text-xs font-semibold leading-6 text-gray-400">
-                  Your flows
-                </div>
-                <ul role="list" className="-mx-2 mt-2 space-y-1">
-                  {flows.map((flow) => (
-                    <li
-                      key={flow.id}
-                      onClick={() => handleChangeActiveFlow(flow.id)}
-                      className="cursor-pointer"
-                    >
-                      <a
-                        className={classNames(
-                          flow.id === currentFlowId
-                            ? 'bg-gray-50 text-blue-600'
-                            : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50',
-                          'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
-                        )}
-                      >
-                        <span
-                          className={classNames(
-                            flow.id === currentFlowId
-                              ? 'text-blue-600 border-blue-600'
-                              : 'text-gray-400 border-gray-200 group-hover:border-blue-600 group-hover:text-blue-600',
-                            'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white'
-                          )}
-                        >
-                          {flow.title.slice(0, 2)}
-                        </span>
-                        <span className="truncate">{flow.title}</span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-                <CreateNewButton onClick={toggleCreateModal} />
-              </li>
-              {/* <li className="-mx-6 mt-auto">
-                <a
-                  href="#"
-                  className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-50"
-                >
-                  <img
-                    className="h-8 w-8 rounded-full bg-gray-50"
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt=""
-                  />
-                  <span className="sr-only">Your profile</span>
-                  <span aria-hidden="true">Tom Cook</span>
-                </a>
-              </li> */}
-            </ul>
-          </nav>
-        </div>
+        <SidebarContent
+          flows={flows}
+          currentFlowId={currentFlowId}
+          handleChangeActiveFlow={handleChangeActiveFlow}
+          toggleCreateModal={toggleCreateModal}
+        />
       </div>
 
       {/* Mobile */}
@@ -276,28 +131,104 @@ export default function Sidebar() {
           <span className="sr-only">Open sidebar</span>
           <Bars3Icon className="h-6 w-6" aria-hidden="true" />
         </button>
-        {/* <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">
-          Dashboard
-        </div> */}
-        {/* <a href="#">
-          <span className="sr-only">Your profile</span>
-          <img
-            className="h-8 w-8 rounded-full bg-gray-50"
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-            alt=""
-          />
-        </a> */}
       </div>
       <CreateFlowModal open={createModalOpen} setOpen={setCreateModalOpen} />
     </>
   )
 }
 
-const CreateNewButton = ({ onClick }) => {
+const SidebarContent = ({
+  flows,
+  currentFlowId,
+  handleChangeActiveFlow,
+  toggleCreateModal,
+}: {
+  flows: FlowData[]
+  currentFlowId: string
+  handleChangeActiveFlow: (newId: string) => void
+  toggleCreateModal: () => void
+}) => {
+  return (
+    <div className="h-screen overflow-hidden border-r border-gray-200 bg-white px-6 flex flex-col">
+      <div className="flex h-16 shrink-0 items-center">Deadliftt</div>
+      <nav className="min-h-0 flex flex-col">
+        <div className="mb-7">
+          <ul role="list" className="-mx-2 space-y-1">
+            {navigation.map((item) => (
+              <li key={item.name}>
+                <a
+                  href={item.href}
+                  className={classNames(
+                    item.current
+                      ? 'bg-gray-50 text-blue-600'
+                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50',
+                    'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                  )}
+                >
+                  <item.icon
+                    className={classNames(
+                      item.current
+                        ? 'text-blue-600'
+                        : 'text-gray-400 group-hover:text-blue-600',
+                      'h-6 w-6 shrink-0'
+                    )}
+                    aria-hidden="true"
+                  />
+                  {item.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="text-xs font-semibold leading-6 text-gray-400">
+            Your flows
+          </div>
+          <ul
+            role="list"
+            className="-mx-2 mt-2 flex flex-col space-y-1 overflow-y-scroll min-h-0"
+          >
+            {flows.map((flow) => (
+              <li
+                key={flow.id}
+                onClick={() => handleChangeActiveFlow(flow.id)}
+                className="cursor-pointer"
+              >
+                <a
+                  className={classNames(
+                    flow.id === currentFlowId
+                      ? 'bg-gray-50 text-blue-600'
+                      : 'text-gray-700 hover:text-blue-600 hover:bg-gray-50',
+                    'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold'
+                  )}
+                >
+                  <span
+                    className={classNames(
+                      flow.id === currentFlowId
+                        ? 'text-blue-600 border-blue-600'
+                        : 'text-gray-400 border-gray-200 group-hover:border-blue-600 group-hover:text-blue-600',
+                      'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border text-[0.625rem] font-medium bg-white'
+                    )}
+                  >
+                    {flow.title.slice(0, 2)}
+                  </span>
+                  <span className="truncate">{flow.title}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <CreateNewButton onClick={toggleCreateModal} />
+        </div>
+      </nav>
+    </div>
+  )
+}
+
+const CreateNewButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <>
       <div className="h-px bg-gray-200 my-4" />
-      <div className="-mx-2">
+      <div className="-mx-2 mb-4">
         <button
           onClick={onClick}
           type="button"
