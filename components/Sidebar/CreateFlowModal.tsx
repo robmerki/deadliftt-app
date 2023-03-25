@@ -13,7 +13,6 @@ const CreateFlowModal = ({ open, setOpen }: Props) => {
   const [category, setCategory] = useState('')
   const [keywords, setKeywords] = useState('')
   const [isLoading, setLoading] = useState(false)
-  const [results, setResults] = useState(null)
 
   const createNewFlow = nodeStore((state) => state.createNewFlow)
 
@@ -25,24 +24,11 @@ const CreateFlowModal = ({ open, setOpen }: Props) => {
         keywords,
       })
       .then((res) => {
-        setResults(res.data)
         setLoading(false)
+        createNewFlow(category, res.data)
+        setOpen(false)
       })
   }
-
-  useEffect(() => {
-    if (isLoading) return
-    if (!results) return
-    if (!isLoading && results) {
-      createNewFlow(category, results)
-      setOpen(false)
-    }
-    return () => {
-      setCategory('')
-      setKeywords('')
-      setResults(null)
-    }
-  }, [results, isLoading, category, createNewFlow, setOpen])
 
   return (
     <>
@@ -101,6 +87,7 @@ const CreateFlowModal = ({ open, setOpen }: Props) => {
                               className="px-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                               placeholder="trains"
                               onChange={(e) => setCategory(e.target.value)}
+                              disabled={isLoading}
                             />
                           </div>
                         </div>
@@ -119,6 +106,7 @@ const CreateFlowModal = ({ open, setOpen }: Props) => {
                               className="px-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                               placeholder="locomotives, electric trains, railroad economics"
                               onChange={(e) => setKeywords(e.target.value)}
+                              disabled={isLoading}
                             />
                           </div>
                         </div>
@@ -133,8 +121,9 @@ const CreateFlowModal = ({ open, setOpen }: Props) => {
                         'inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
                       )}
                       onClick={handleCreateFlow}
+                      disabled={isLoading}
                     >
-                      Create
+                      {isLoading ? 'Loading...' : 'Create'}
                     </button>
                   </div>
                 </Dialog.Panel>
