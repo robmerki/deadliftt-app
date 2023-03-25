@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import nodeStore, { NodeStore, FlowData } from '@/stores/nodeStore'
 import { shallow } from 'zustand/shallow'
 import findIndex from 'lodash/findIndex'
-import TextUpdaterNode from './CustomNodes/TextUpdaterNode'
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -21,8 +20,6 @@ const selector = (state: NodeStore) => ({
   onConnect: state.onConnect,
   resetCurrentFlow: state.resetCurrentFlow,
 })
-
-const nodeTypes = { textUpdater: TextUpdaterNode }
 
 const Canvas = () => {
   const {
@@ -58,7 +55,6 @@ const Canvas = () => {
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       onConnect={onConnect}
-      nodeTypes={nodeTypes}
     >
       <Panel position="top-center">
         <div>

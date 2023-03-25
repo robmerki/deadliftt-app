@@ -2,29 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { Configuration, OpenAIApi } from 'openai'
 
-const testData = `{
-  "keyword1": {
-    "category1": [
-      "bullet1",
-      "bullet2"
-    ],
-    "subcategory1": [
-      "bullet1",
-      "bullet2"
-    ]
-  },
-  "keyword2": {
-    "subcategory2": [
-      "bullet1",
-      "bullet2"
-    ],
-    "subcategory3": [
-      "bullet1",
-      "bullet2"
-    ]
-  }
-}`
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<string>
